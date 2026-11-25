@@ -5,8 +5,16 @@ codex plugin marketplace upgrade pstack-claude
 codex plugin marketplace upgrade mattpocock
 
 Write-Host "2. Refreshing Codex plugins..."
-codex plugin add pstack@pstack-claude
-codex plugin add mattpocock-skills@mattpocock
+foreach ($plugin in @("pstack@pstack-claude", "mattpocock-skills@mattpocock")) {
+  $out = & codex plugin add $plugin 2>&1
+  if ($LASTEXITCODE -eq 0) {
+    $out | ForEach-Object { Write-Host "  $_" }
+  } elseif (($out -join "`n") -match "os error 5|Access is denied") {
+    Write-Host "  Skipped live cache swap for $plugin (Windows file lock while Codex is open; restart Codex to pick up any version bump)."
+  } else {
+    throw "codex plugin add $plugin failed: $($out -join "`n")"
+  }
+}
 
 $pstackSrc = "$HOME\.codex\.tmp\marketplaces\pstack-claude\plugins\pstack"
 $mpSrc = "$HOME\.codex\.tmp\marketplaces\mattpocock"
