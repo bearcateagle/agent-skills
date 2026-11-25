@@ -6,13 +6,18 @@ codex plugin marketplace upgrade mattpocock
 
 Write-Host "2. Refreshing Codex plugins..."
 foreach ($plugin in @("pstack@pstack-claude", "mattpocock-skills@mattpocock")) {
+  $prevEap = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
   $out = & codex plugin add $plugin 2>&1
-  if ($LASTEXITCODE -eq 0) {
-    $out | ForEach-Object { Write-Host "  $_" }
-  } elseif (($out -join "`n") -match "os error 5|Access is denied") {
+  $code = $LASTEXITCODE
+  $ErrorActionPreference = $prevEap
+  $text = ($out | Out-String).Trim()
+  if ($code -eq 0) {
+    if ($text) { Write-Host "  $text" }
+  } elseif ($text -match "os error 5|Access is denied") {
     Write-Host "  Skipped live cache swap for $plugin (Windows file lock while Codex is open; restart Codex to pick up any version bump)."
   } else {
-    throw "codex plugin add $plugin failed: $($out -join "`n")"
+    throw "codex plugin add $plugin failed (exit $code): $text"
   }
 }
 
