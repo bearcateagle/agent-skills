@@ -1,0 +1,15 @@
+{
+  "updatedAt": "2026-11-25T00:08:09Z",
+  "pstack": {
+    "repo": "https://github.com/michael-denyer/pstack-claude.git",
+    "commit": "103a68d",
+    "skills": 68,
+    "agents": 4
+  },
+  "mattpocock": {
+    "repo": "https://github.com/mattpocock/skills.git",
+    "commit": "d653911",
+    "skills": 39
+  },
+  "totalSkills": 107
+}
